@@ -126,7 +126,7 @@
             resultCard.classList.add('hidden');
             submitBtn.disabled = true;
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${key}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview-09-2025:generateContent?key=${key}`;
             const payload = {
                 contents: [{ parts: [{ text: `분석할 종목/티커: "${ticker}". 한글 종목명일 경우 상장 티커와 최신 실적을 반영하여 완전한 5단계 종합 리포트를 작성하세요.` }] }],
                 systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] }
