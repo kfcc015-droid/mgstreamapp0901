@@ -41,7 +41,6 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
-        /* Custom Scrollbars and Typography Styling */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -91,7 +90,7 @@
                 <div>
                     <div class="flex items-center gap-2">
                         <span class="font-extrabold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-200 to-gray-400">AlphaHedge AI</span>
-                        <span class="px-2 py-0.5 text-[10px] font-semibold tracking-wide bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full">v3.2 Fixed</span>
+                        <span class="px-2 py-0.5 text-[10px] font-semibold tracking-wide bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full">v3.3 Stable</span>
                     </div>
                     <p class="text-xs text-gray-400 hidden sm:block">30년 경력 헤지펀드 수석 애널리스트 & 버핏·린치 통합 프레임워크</p>
                 </div>
@@ -99,10 +98,9 @@
 
             <!-- Header Action Controls -->
             <div class="flex items-center gap-2 sm:gap-3">
-                <!-- API Key Status Badge / Trigger -->
                 <button id="apiKeyBadgeBtn" class="px-3 py-1.5 text-xs font-semibold rounded-lg border transition flex items-center gap-1.5 bg-gray-800 text-gray-300 border-gray-700 hover:border-gray-600">
-                    <span id="apiStatusDot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                    <span id="apiStatusText" class="hidden sm:inline">API 키 설정</span>
+                    <span id="apiStatusDot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    <span id="apiStatusText" class="hidden sm:inline">API 설정</span>
                 </button>
 
                 <button id="historyBtn" class="px-3 py-1.5 text-xs font-medium bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg border border-gray-700 transition flex items-center gap-2">
@@ -356,25 +354,25 @@
                 <div class="bg-gray-900/90 border border-gray-800 rounded-xl p-3.5 text-xs text-gray-300 leading-relaxed space-y-2">
                     <div class="flex items-center gap-2 text-emerald-400 font-semibold">
                         <i class="fa-solid fa-shield-halved"></i>
-                        <span>보안 저장 및 무료 키 안내</span>
+                        <span>로컬 보안 저장 방식</span>
                     </div>
                     <p class="text-gray-400">
-                        입력하신 API Key는 브라우저 LocalStorage에만 저장됩니다. Google AI Studio에서 발급받은 무료 API Key를 입력하세요.
+                        입력하신 API Key는 브라우저 LocalStorage에만 저장되며 외부 서버로 전송되지 않습니다. GitHub Pages 등에 직접 배포하여 사용할 때 등록해 주세요.
                     </p>
                 </div>
 
                 <div>
                     <div class="flex items-center justify-between mb-1.5">
                         <label for="customApiKey" class="text-xs font-bold text-gray-200">
-                            Gemini API Key
+                            Gemini API Key (선택사항)
                         </label>
                         <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" 
                            class="text-xs text-emerald-400 hover:text-emerald-300 underline flex items-center gap-1">
-                            무료 API 키 발급받기 <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                            무료 API 키 발급 <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                         </a>
                     </div>
                     <div class="relative">
-                        <input type="password" id="customApiKey" placeholder="AIzaSy..."
+                        <input type="password" id="customApiKey" placeholder="AIzaSy... (비워두면 기본 키 사용)"
                             class="w-full pl-3.5 pr-10 py-2.5 bg-gray-900 border border-gray-700 rounded-xl text-sm text-white font-mono placeholder-gray-600 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition">
                         <button type="button" id="toggleApiKeyVisibility" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-200" title="키 표시/숨김">
                             <i class="fa-regular fa-eye text-sm"></i>
@@ -399,10 +397,10 @@
                 </button>
                 <div class="flex gap-2">
                     <button type="button" id="removeApiKeyBtn" class="px-3 py-2 text-rose-400 hover:bg-rose-950/30 rounded-xl text-xs font-semibold transition">
-                        키 삭제
+                        초기화
                     </button>
                     <button type="button" id="saveSettingsBtn" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition shadow-lg shadow-emerald-950">
-                        저장 및 적용
+                        저장
                     </button>
                 </div>
             </div>
@@ -416,12 +414,12 @@
     </div>
 
     <script>
-        const DEFAULT_ENV_API_KEY = "";
+        const apiKey = "";
         const STORAGE_KEY = 'alpha_gemini_api_key';
         const HISTORY_STORAGE_KEY = 'alpha_hedge_history';
 
-        // Official Gemini Flash Model
-        const MODEL_NAME = 'gemini-3-flash-preview';
+        // Official Gemini 2.5 Flash Model
+        const MODEL_NAME = 'gemini-2.5-flash-preview-09-2025';
 
         let financialChartInstance = null;
         let analysisHistory = JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY) || '[]');
@@ -577,14 +575,14 @@
                 }
                 updateApiKeyStatusUI();
                 settingsModal.classList.add('hidden');
-                showToast('API 키 설정이 저장되었습니다.');
+                showToast('설정이 저장되었습니다.');
             });
 
             removeApiKeyBtn.addEventListener('click', () => {
                 customApiKeyInput.value = '';
                 localStorage.removeItem(STORAGE_KEY);
                 updateApiKeyStatusUI();
-                showToast('저장된 API 키가 삭제되었습니다.');
+                showToast('API 키가 초기화되었습니다.');
             });
 
             testApiKeyBtn.addEventListener('click', testApiKeyValidity);
@@ -603,21 +601,21 @@
         function getActiveApiKey() {
             const storedKey = localStorage.getItem(STORAGE_KEY);
             const inputKey = customApiKeyInput.value.trim();
-            return inputKey || storedKey || DEFAULT_ENV_API_KEY;
+            return (inputKey || storedKey || apiKey || '').trim();
         }
 
         function updateApiKeyStatusUI() {
             const activeKey = getActiveApiKey();
-            if (activeKey && activeKey.length > 5) {
+            if (activeKey && activeKey.length >= 10) {
                 apiStatusDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
                 apiStatusText.textContent = 'API 키 등록됨';
                 apiStatusText.className = 'text-emerald-400 font-semibold hidden sm:inline';
                 apiKeyBadgeBtn.className = 'px-3 py-1.5 text-xs font-semibold rounded-lg border transition flex items-center gap-1.5 bg-emerald-500/10 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/20';
             } else {
-                apiStatusDot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-pulse';
-                apiStatusText.textContent = 'API 키 입력 필요';
-                apiStatusText.className = 'text-amber-400 font-semibold hidden sm:inline';
-                apiKeyBadgeBtn.className = 'px-3 py-1.5 text-xs font-semibold rounded-lg border transition flex items-center gap-1.5 bg-amber-500/10 text-amber-300 border-amber-500/30 hover:bg-amber-500/20';
+                apiStatusDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+                apiStatusText.textContent = '기본 API 활성';
+                apiStatusText.className = 'text-emerald-400 font-semibold hidden sm:inline';
+                apiKeyBadgeBtn.className = 'px-3 py-1.5 text-xs font-semibold rounded-lg border transition flex items-center gap-1.5 bg-gray-800 text-gray-300 border-gray-700 hover:border-gray-600';
             }
         }
 
@@ -627,36 +625,34 @@
         }
 
         async function testApiKeyValidity() {
-            const keyToTest = customApiKeyInput.value.trim() || getActiveApiKey();
-            if (!keyToTest) {
-                showToast('테스트할 API Key를 입력해주세요.', 'error');
-                return;
-            }
+            const currentKey = getActiveApiKey();
 
             const origText = testApiKeyBtn.innerHTML;
             testApiKeyBtn.disabled = true;
-            testApiKeyBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> 검증 중...';
+            testApiKeyBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> 연결 확인 중...';
 
             try {
-                const testUrl = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${keyToTest}`;
+                const testUrl = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${currentKey}`;
                 const res = await fetch(testUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: "ping" }] }]
+                        contents: [{ parts: [{ text: "Hello" }] }]
                     })
                 });
 
                 if (res.ok) {
-                    showToast('✅ API 키가 유효하며 연결되었습니다!');
-                    localStorage.setItem(STORAGE_KEY, keyToTest);
+                    showToast('✅ 정상적으로 연결되었습니다!');
+                    if (customApiKeyInput.value.trim()) {
+                        localStorage.setItem(STORAGE_KEY, customApiKeyInput.value.trim());
+                    }
                     updateApiKeyStatusUI();
                 } else {
                     const errJson = await res.json().catch(() => ({}));
                     throw new Error(errJson.error?.message || `HTTP ${res.status}`);
                 }
             } catch (err) {
-                showToast(`❌ API 키 연결 실패: ${err.message}`, 'error');
+                showToast(`❌ 연결 실패: ${err.message}`, 'error');
             } finally {
                 testApiKeyBtn.disabled = false;
                 testApiKeyBtn.innerHTML = origText;
@@ -664,13 +660,7 @@
         }
 
         async function startAnalysis(tickerQuery) {
-            const apiKey = getActiveApiKey();
-
-            if (!apiKey && !DEFAULT_ENV_API_KEY) {
-                openSettingsModal();
-                showToast('Gemini API Key를 입력한 후 다시 시도해주세요.', 'error');
-                return;
-            }
+            const currentKey = getActiveApiKey();
 
             welcomeSection.classList.add('hidden');
             reportContainer.classList.add('hidden');
@@ -680,49 +670,78 @@
             animateLoadingSteps();
 
             const useSearch = document.getElementById('enableSearchToggle').checked;
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${currentKey}`;
 
             const userPrompt = `분석 대상 종목/티커: "${tickerQuery}". 
-만약 한글 기업명(예: 삼성전자, 카카오, SK하이닉스 등)인 경우 관련 코스피/코스닥 상장 티커 및 최신 주가, 재무 수치를 구글 검색으로 정확히 수집하여 확인하세요.
+만약 한글 기업명(예: 삼성전자, 카카오, SK하이닉스 등)인 경우 관련 코스피/코스닥 상장 티커 및 최신 주가, 재무 수치를 실시간으로 검색하여 확인하세요.
 반드시 주어진 5단계 양식에 맞추어 완전하고 정밀한 종합 분석 리포트를 작성해 주세요.`;
 
-            const payload = {
+            const payloadWithTools = {
+                contents: [{ parts: [{ text: userPrompt }] }],
+                systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
+                ...(useSearch ? { tools: [{ "google_search": {} }] } : {})
+            };
+
+            const payloadWithoutTools = {
                 contents: [{ parts: [{ text: userPrompt }] }],
                 systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] }
             };
 
-            if (useSearch) {
-                payload.tools = [{ "google_search": {} }];
-            }
-
             try {
-                const response = await fetchWithRetry(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
+                let response;
+                let data;
 
-                if (!response.ok) {
-                    const errData = await response.json().catch(() => ({}));
-                    const errMsg = errData.error?.message || `API 서버 응답 오류 (${response.status})`;
-                    throw new Error(errMsg);
+                // 1차 시도 (검색 도구 활성화된 요청)
+                try {
+                    response = await fetchWithRetry(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payloadWithTools)
+                    });
+                    if (response.ok) {
+                        data = await response.json();
+                    }
+                } catch (toolError) {
+                    // 도구 연동 실패 시 기본 페이로드로 폴백
                 }
 
-                const data = await response.json();
-                
+                // 2차 폴백 시도 (도구 없이 일반 생성)
+                if (!data || !response || !response.ok) {
+                    response = await fetchWithRetry(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payloadWithoutTools)
+                    });
+
+                    if (!response.ok) {
+                        const errData = await response.json().catch(() => ({}));
+                        throw new Error(errData.error?.message || `API 서버 응답 에러 (${response.status})`);
+                    }
+                    data = await response.json();
+                }
+
                 const parts = data.candidates?.[0]?.content?.parts || [];
-                const textOutput = parts.map(p => p.text || '').join('\n').trim();
+                const textOutput = parts
+                    .filter(p => p.text)
+                    .map(p => p.text)
+                    .join('\n')
+                    .trim();
 
                 if (!textOutput) {
-                    throw new Error('분석 리포트 데이터를 불러오지 못했습니다.');
+                    throw new Error('분석 리포트 데이터를 수신하지 못했습니다. 다시 시도해 주세요.');
                 }
 
                 renderAnalysisReport(tickerQuery, textOutput);
                 saveToHistory(tickerQuery, textOutput);
 
             } catch (err) {
-                console.error('Analysis Error:', err);
-                showToast(`분석 실패: ${err.message}`, 'error');
+                const isKeyError = err.message.includes('API key not valid') || err.message.includes('API_KEY_INVALID');
+                if (isKeyError) {
+                    showToast('유효하지 않은 API 키입니다. 키 설정을 확인해주세요.', 'error');
+                    openSettingsModal();
+                } else {
+                    showToast(`분석 요청 실패: ${err.message}`, 'error');
+                }
                 welcomeSection.classList.remove('hidden');
             } finally {
                 loadingSection.classList.add('hidden');
@@ -730,11 +749,14 @@
             }
         }
 
-        async function fetchWithRetry(url, options, retries = 3, delays = [1000, 2000, 4000]) {
+        async function fetchWithRetry(url, options, retries = 5, delays = [1000, 2000, 4000, 8000, 16000]) {
             for (let i = 0; i < retries; i++) {
                 try {
                     const response = await fetch(url, options);
-                    if (response.ok || response.status === 400 || response.status === 403) return response;
+                    if (response.ok) return response;
+                    if (response.status === 400 || response.status === 403) {
+                        return response;
+                    }
                 } catch (e) {
                     if (i === retries - 1) throw e;
                 }
@@ -746,9 +768,9 @@
         function animateLoadingSteps() {
             const steps = [
                 { id: 'step1', title: '실시간 시장 데이터 검색 중...', time: 0 },
-                { id: 'step2', title: '워런 버핏 경제적 해자 검증 중...', time: 1500 },
-                { id: 'step3', title: '피터 린치 PEG & 성장성 산출 중...', time: 3000 },
-                { id: 'step4', title: '목표주가 & 손절가 리포트 합성 중...', time: 4500 }
+                { id: 'step2', title: '워런 버핏 경제적 해자 검증 중...', time: 1400 },
+                { id: 'step3', title: '피터 린치 PEG & 성장성 산출 중...', time: 2800 },
+                { id: 'step4', title: '목표주가 & 손절가 리포트 합성 중...', time: 4200 }
             ];
 
             steps.forEach(s => {
@@ -842,7 +864,7 @@
                         chartData = parsed;
                     }
                 } catch (e) {
-                    console.warn('Chart JSON fallback used.');
+                    // Fallback to defaults on parse issue
                 }
             }
 
@@ -952,7 +974,7 @@
             textarea.select();
             document.execCommand('copy');
             document.body.removeChild(textarea);
-            showToast('마크다운 분석 리포트가 클립보드에 복사되었습니다.');
+            showToast('마크다운 분석 리포트가 복사되었습니다.');
         }
 
         function showToast(msg, type = 'success') {
